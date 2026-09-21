@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 from openai import OpenAI
 import argparse
+from prompts import system_prompt
 
 def generate_content(client, messages, args):
     response = client.chat.completions.create(
@@ -20,7 +21,7 @@ def generate_content(client, messages, args):
     print(response.choices[0].message.content)
 
 
-def main():
+def main() -> None:
 
     parser = argparse.ArgumentParser(description="Chatbot")
     parser.add_argument("user_prompt", type=str, help="User prompt")
@@ -37,6 +38,7 @@ def main():
         api_key=api_key,
     )
     messages = [
+        {"role": "system", "content": system_prompt},
         {"role": "user", "content": args.user_prompt},
     ]
     generate_content(client, messages, args)
