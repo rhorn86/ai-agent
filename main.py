@@ -3,22 +3,33 @@ from dotenv import load_dotenv
 from openai import OpenAI
 import argparse
 from prompts import system_prompt
+from call_function import available_functions
+import json
 
 def generate_content(client, messages, args):
     response = client.chat.completions.create(
         model="openrouter/free",
         messages=messages,
+        temperature=0,
+        tools=available_functions,
     )
     if not response.usage:
         raise RuntimeError("No usage object was returned in the response")
+
+    message = response.choices[0].message
 
     if args.verbose:
         print("User prompt:")
         print(args.user_prompt)
         print(f"\nPrompt tokens: {response.usage.prompt_tokens}")
         print(f"Response tokens: {response.usage.completion_tokens}\n")
-    print("Response:")
-    print(response.choices[0].message.content)
+    if message.tool_calls:
+        for tool_call in message.tool_calls:
+            function_args = json.loads(tool_call.function.arguments or "{}")
+            print(f"Calling function: {tool_call.function.name}({function_args})")
+    else:
+        print("Response:")
+        print(response.choices[0].message.content)
 
 
 def main() -> None:

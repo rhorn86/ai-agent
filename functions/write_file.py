@@ -18,3 +18,24 @@ def write_file(working_directory: str, file_path: str, content: str) -> str:
         return f'Error: the "write_file()" function failed with an unexpected error'
 
 
+schema_write_file = {
+    "type": "function",
+    "function": {
+        "name": "write_file",
+        "description": "Writes the given string of content to a specified file relative to the working directory",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "file_path": {
+                    "type": "string",
+                    "description": "File path to write content to, relative to the working directory",
+                },
+                "content": {
+                    "type": "string",
+                    "description": "The actual string data provided by the caller of the function, for writing to the specified file path relative to the working directory",
+                },
+            },
+            "required": ["file_path", "content"],
+        },
+    },
+}
